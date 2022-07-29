@@ -12,8 +12,8 @@
 struct exti_data
 {
     u16 data_len; //数据长度
-    u16 data_writed;    //已写入的数据位置1
-    u32 timestap[10];
+    __IO u16 data_writed;    //已写入的数据位置1
+    __IO u32 timestap[10];
 } ;
 extern struct exti_data ExtiData;
 

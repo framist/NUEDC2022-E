@@ -82,12 +82,23 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 */
 
 // USER START (Optionally insert additional static code)
-
+extern __IO uint32_t nowTime;
 // 刷新本界面显示
-
-void show_nowTime(uint32_t time) {
+void show_reflesh(double theta, double gamma) {
+    show_nowTime(nowTime);
     char buf[256]; 
-    sprintf(buf, "now time = %.8f us", time/168.0);
+    sprintf(buf, "theta = %f (deg)",theta);
+    TEXT_SetText(WM_GetDialogItem(hWin_ShowWindow, ID_TEXT_2), buf);
+    sprintf(buf, "gamma = %f (m)",gamma);
+    TEXT_SetText(WM_GetDialogItem(hWin_ShowWindow, ID_TEXT_3), buf);
+}
+
+// 绘制位置
+
+// 显示时间
+void show_nowTime(u32 time) {
+    char buf[256]; 
+    sprintf(buf, "now time = %u ms", time);
     TEXT_SetText(WM_GetDialogItem(hWin_ShowWindow, ID_TEXT_1), buf);
 }
 // USER END
@@ -150,7 +161,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     //
     hItem = WM_GetDialogItem(pMsg->hWin, ID_BUTTON_2);
     BUTTON_SetFont(hItem, GUI_FONT_13_1);
-    BUTTON_SetText(hItem, "track");
+    BUTTON_SetText(hItem, "Track");
     // USER START (Optionally insert additional code for further widget initialization)
 
     // USER END

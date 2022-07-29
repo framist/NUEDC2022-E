@@ -85,9 +85,9 @@ void EXTI2_IRQHandler(void)
 //中断服务程序中需要做的事情
 //在HAL库中所有的外部中断服务函数都会调用此函数
 //GPIO_Pin:中断引脚号
+extern __IO uint32_t nowTime;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-    uint32_t nowTime = SysTick->VAL;
     switch (GPIO_Pin) {
     case GPIO_PIN_0:
         if ((ExtiData.data_writed & GPIO_Pin) == 0) {

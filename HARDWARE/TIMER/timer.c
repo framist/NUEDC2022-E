@@ -15,7 +15,7 @@
 #include "led.h"
 #include "GUI.h"
 extern __IO int32_t OS_TimeMS; //GUI 用
-
+extern __IO uint32_t nowTime;
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
 //ALIENTEK STM32F407开发板
@@ -189,7 +189,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         OS_TimeMS++;         //系统心跳
     }
     if(htim==(&TIM5_Handler)){  
-        //nowTime++;
+        nowTime++;
     }
 
 }

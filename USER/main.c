@@ -32,23 +32,25 @@ PF8 作为激光笔控制输出
 #include "GUI.h"
 #include "FramewinDLG.h"
 
-
+__IO uint32_t nowTime;
 
 // 设置 DS3120 角度
 // 1000~2500ns -> 0~270 deg
 void PWM_SetDegree(double deg)
 {
-    LASER(GPIO_PIN_RESET);   //关闭激光笔
+    LASER(GPIO_PIN_SET);   //关闭激光笔
     deg += 90;
-    deg = deg * 90 / 106; // 修正
+    deg = deg * 90 / 106; // 角度初步修正
+    deg = (deg - 0.2193)/1.0221 ; // 角度根据激光修正
     u32 compare = 5000 - (u32)(deg/180.0 * 1500 + 1000);
 	TIM_SetTIM14Compare1(compare);
     // mainLogPrintf("\nset deg: %f deg, %u cmp",deg,compare);
-    LASER(GPIO_PIN_SET);   
+    LASER(GPIO_PIN_RESET);   
 }
 
 // 主计算函数
-#define NOW_TIME_TICK (1/168000000.0)
+//#define NOW_TIME_TICK (1/168000000.0)
+#define NOW_TIME_TICK (1/200000.0)
 #include "math.h"
 void main_solve(struct exti_data *ed) {
     //mainLogPrintf("\nmain_solve:");
@@ -59,7 +61,6 @@ void main_solve(struct exti_data *ed) {
 
         double tau1 = t2 - t3;
         double tau2 = t1 - t2; 
-        mainLogPrintf("\n[+]solved t: %.8f, %.8f, %.8f s\n    tau: %.8f, %.8f",t1,t2,t3,tau1,tau2);
         double v = 340.0;   // 声速 m/s
         double d = 0.5;       // 相邻传感器之间的距离 m
         double theta, gamma;
@@ -69,28 +70,34 @@ void main_solve(struct exti_data *ed) {
         theta = PI/2 - acos( (pow(gamma,2) + pow(d,2) - pow(gamma+tau2*v,2))
                 /(2*(gamma)*d) );
         theta = theta * 180.0 / PI;
-        mainLogPrintf("\n   [!]theta: %f deg; gamma: %f m",theta,gamma);
+        mainLogPrintf("\n[+]solved t: %.8f, %.8f, %.8f s\n    tau: %.8f, %.8f",t1,t2,t3,tau1,tau2);
+        mainLogPrintf("\n   theta: %f deg; gamma: %f m",theta,gamma);
         
-        if ( -60 < theta && theta < 60 /* && 0 < gamma && gamma < 5*/) {
-            PWM_SetDegree(-theta);
+        //剔除坏值
+        if ( -60 < theta && theta < 60 
+            && fabs(tau1)+fabs(tau2) < 0.005 // <1.5e-4 * 2
+            /* && 0 < gamma && gamma < 5*/) {
+            PWM_SetDegree(theta);
+            show_reflesh(theta*1.0362-1.4403, 0.3869*gamma+1.8659);
         }
         
+        //消抖
+        while (1) {
+            GUI_Delay(20);
+            if (ed->data_writed == 0x0U) {
+                break;
+            } else {
+                ed->data_writed = 0x0U;
+            }
+        }
         
     } else {
-        mainLogPrintf(".%x.",ed->data_writed);
+        //mainLogPrintf(".%x.",ed->data_writed);
     }
 //    HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 //    HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 //    HAL_NVIC_EnableIRQ(EXTI2_IRQn);
-    //消抖
-    while (1) {
-        GUI_Delay(1);
-        if (ed->data_writed == 0x0U) {
-            break;
-        } else {
-            ed->data_writed = 0x0U;
-        }
-    }
+
     
 }
 void voiceSpeed_solve(struct exti_data *ed) {
@@ -116,7 +123,7 @@ int main(void)
     
     TIM3_Init(999,83); 	            //1KHZ 定时器3设置为1ms
     TIM4_Init(999,839);             //触摸屏扫描速度,100HZ.
-    //TIM5_Init(9,83);                //nowTime 100kHZ 0.000 01s.  NOW_TIME_TICK
+    TIM5_Init(4,83);                //nowTime 200kHZ 0.000 005s.  NOW_TIME_TICK
     TIM14_PWM_Init(5000-1,84-1);    //84M/84=1M的计数频率，自动重装载为5000，那么PWM频率为1M/5000=200HZ
 
 	LED_Init();						//初始化LED	
@@ -140,22 +147,23 @@ int main(void)
     WM_HWIN CreatemainFramewin(void);
     CreatemainFramewin();
     
-    LASER(GPIO_PIN_SET);
+    LASER(GPIO_PIN_RESET);
     PWM_SetDegree(-90);
     GUI_Delay(2000);
     PWM_SetDegree(90);  
     GUI_Delay(2000);
     PWM_SetDegree(0);   
-    LASER(GPIO_PIN_RESET);   
+    LASER(GPIO_PIN_SET);   
     mainLogPrint("\ninit OK!");
 
     while(1)
 	{
-		GUI_Delay(1000);
+		//GUI_Delay(500);
 
         main_solve(&ExtiData); 
+        
         //voiceSpeed_solve(&ExtiData); 
-        show_nowTime(SysTick->VAL);
+        //show_nowTime(SysTick->VAL);
         GUI_Exec();
         LED0 = !LED0;
 	} 

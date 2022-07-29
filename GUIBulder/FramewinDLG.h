@@ -21,6 +21,7 @@ WM_HWIN CreatemainFramewin(void);
 void mainLogPrint(const char *log);
 void mainLogPrintf(const char *fmt, ...);
 void show_nowTime(uint32_t time);
+void show_reflesh(double theta, double gamma);
 
 extern WM_HWIN hWin_LogFramewin;
 extern WM_HWIN hWin_ShowWindow;
