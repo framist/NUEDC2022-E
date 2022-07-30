@@ -22,6 +22,8 @@
 #include "FramewinDLG.h"
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
+#include "arm_math.h"
 // USER END
 
 #include "DIALOG.h"
@@ -83,17 +85,30 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 
 // USER START (Optionally insert additional static code)
 extern __IO uint32_t nowTime;
+
+// 绘制位置
+void show_plot(double theta, double gamma) {
+    theta = -theta;
+    
+    GUI_SetColor(GUI_DARKGREEN);
+    GUI_DrawCircle((int)(250+45/2+ gamma*cos(theta/180*PI)*100/2), (int)(50+150/2 + gamma*sin(theta/180*PI)*100/2), 4);
+}
 // 刷新本界面显示
 void show_reflesh(double theta, double gamma) {
+
     show_nowTime(nowTime);
     char buf[256]; 
     sprintf(buf, "theta = %f (deg)",theta);
     TEXT_SetText(WM_GetDialogItem(hWin_ShowWindow, ID_TEXT_2), buf);
     sprintf(buf, "gamma = %f (m)",gamma);
     TEXT_SetText(WM_GetDialogItem(hWin_ShowWindow, ID_TEXT_3), buf);
+    
+    WM_SelectWindow(hWin_ShowWindow);
+    show_plot(theta, gamma);
+    
 }
 
-// 绘制位置
+
 
 // 显示时间
 void show_nowTime(u32 time) {
@@ -235,6 +250,16 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     }
     break;
   // USER START (Optionally insert additional message handling)
+  case WM_PAINT:
+    GUI_Clear();
+    GUI_SetColor(GUI_WHITE);
+    GUI_FillRect(250, 50, 250+350/2, 50+300/2);
+    GUI_SetColor(GUI_GRAY);
+    GUI_DrawRect(250, 50+100/2, 250+50/2, 50+200/2);
+    GUI_DrawRect(250+300/2, 50, 250+350/2, 50+300/2);
+    GUI_SetColor(GUI_RED);
+    GUI_FillCircle(250+(int)45/2, 50+150/2, 5);
+    break;
   // USER END
   default:
     WM_DefaultProc(pMsg);

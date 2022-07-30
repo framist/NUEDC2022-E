@@ -73,12 +73,15 @@ void main_solve(struct exti_data *ed) {
         mainLogPrintf("\n[+]solved t: %.8f, %.8f, %.8f s\n    tau: %.8f, %.8f",t1,t2,t3,tau1,tau2);
         mainLogPrintf("\n   theta: %f deg; gamma: %f m",theta,gamma);
         
+        // 拟合校准
+        theta = theta*1.0362-1.4403;
+        gamma = 0.3869*gamma+1.8659;
         //剔除坏值
         if ( -60 < theta && theta < 60 
             && fabs(tau1)+fabs(tau2) < 0.005 // <1.5e-4 * 2
             /* && 0 < gamma && gamma < 5*/) {
             PWM_SetDegree(theta);
-            show_reflesh(theta*1.0362-1.4403, 0.3869*gamma+1.8659);
+            show_reflesh(theta,gamma);
         }
         
         //消抖
@@ -155,7 +158,7 @@ int main(void)
     PWM_SetDegree(0);   
     LASER(GPIO_PIN_SET);   
     mainLogPrint("\ninit OK!");
-
+    show_reflesh(0,0);
     while(1)
 	{
 		//GUI_Delay(500);
