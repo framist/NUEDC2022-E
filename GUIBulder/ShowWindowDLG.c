@@ -71,7 +71,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
   { TEXT_CreateIndirect, "gammaText", ID_TEXT_3, 14, 88, 227, 29, 0, 0x64, 0 },
   { CHECKBOX_CreateIndirect, "Checkbox", ID_CHECKBOX_0, 20, 144, 80, 20, 0, 0x0, 0 },
   { BUTTON_CreateIndirect, "singleButton", ID_BUTTON_1, 20, 175, 120, 30, 0, 0x0, 0 },
-  { BUTTON_CreateIndirect, "trackButton", ID_BUTTON_2, 20, 214, 121, 30, 0, 0x0, 0 },
+  { BUTTON_CreateIndirect, "trackButton", ID_BUTTON_2, 20, 214, 120, 30, 0, 0x0, 0 },
   // USER START (Optionally insert additional widgets)
   // USER END
 };
@@ -85,6 +85,7 @@ static const GUI_WIDGET_CREATE_INFO _aDialogCreate[] = {
 
 // USER START (Optionally insert additional static code)
 extern __IO uint32_t nowTime;
+enum MODE myMODE = SIGNLE_RUN;
 
 // 绘制位置
 void show_plot(double theta, double gamma) {
@@ -135,14 +136,14 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
     // Initialization of 'resetButton'
     //
     hItem = WM_GetDialogItem(pMsg->hWin, ID_BUTTON_0);
-    BUTTON_SetText(hItem, "Reset");
+    BUTTON_SetText(hItem, "Reset Show");
     BUTTON_SetFont(hItem, GUI_FONT_16_1);
     //
     // Initialization of 'titleText'
     //
     hItem = WM_GetDialogItem(pMsg->hWin, ID_TEXT_0);
     TEXT_SetFont(hItem, GUI_FONT_20_1);
-    TEXT_SetText(hItem, "AUEDC 2022 | Sound Source Tracking System");
+    TEXT_SetText(hItem, "AUEDC 2022 | E: Sound Source Tracking System");
     //
     // Initialization of 'timeText'
     //
@@ -193,6 +194,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         break;
       case WM_NOTIFICATION_RELEASED:
         // USER START (Optionally insert code for reacting on notification message)
+        WM_Paint(hWin_ShowWindow);
         // USER END
         break;
       // USER START (Optionally insert additional code for further notification handling)
@@ -211,6 +213,7 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         break;
       case WM_NOTIFICATION_VALUE_CHANGED:
         // USER START (Optionally insert code for reacting on notification message)
+        HAL_GPIO_TogglePin(GPIOF,GPIO_PIN_8);
         // USER END
         break;
       // USER START (Optionally insert additional code for further notification handling)
@@ -225,6 +228,16 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         break;
       case WM_NOTIFICATION_RELEASED:
         // USER START (Optionally insert code for reacting on notification message)
+        // 设置按钮颜色
+        hItem = WM_GetDialogItem(pMsg->hWin, ID_BUTTON_1);
+        if (myMODE == SIGNLE_RUN) {
+            myMODE = SIGNLE_STOP;
+            BUTTON_SetBkColor(hItem, BUTTON_CI_UNPRESSED, GUI_GRAY);
+        } else {
+            myMODE = SIGNLE_RUN;
+            BUTTON_SetBkColor(hItem, BUTTON_CI_UNPRESSED, GUI_LIGHTGREEN);
+            BUTTON_SetBkColor(WM_GetDialogItem(pMsg->hWin, ID_BUTTON_2), BUTTON_CI_UNPRESSED, GUI_GRAY);
+        }
         // USER END
         break;
       // USER START (Optionally insert additional code for further notification handling)
@@ -239,6 +252,15 @@ static void _cbDialog(WM_MESSAGE * pMsg) {
         break;
       case WM_NOTIFICATION_RELEASED:
         // USER START (Optionally insert code for reacting on notification message)
+        hItem = WM_GetDialogItem(pMsg->hWin, ID_BUTTON_2);
+        if (myMODE == TRACK_RUN) {
+            myMODE = TRACK_STOP;
+            BUTTON_SetBkColor(hItem, BUTTON_CI_UNPRESSED, GUI_GRAY);
+        } else {
+            myMODE = TRACK_RUN;
+            BUTTON_SetBkColor(hItem, BUTTON_CI_UNPRESSED, GUI_LIGHTGREEN);
+            BUTTON_SetBkColor(WM_GetDialogItem(pMsg->hWin, ID_BUTTON_1), BUTTON_CI_UNPRESSED, GUI_GRAY);
+        }
         // USER END
         break;
       // USER START (Optionally insert additional code for further notification handling)

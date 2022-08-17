@@ -25,5 +25,6 @@ void show_reflesh(double theta, double gamma);
 
 extern WM_HWIN hWin_LogFramewin;
 extern WM_HWIN hWin_ShowWindow;
-
+enum MODE {SIGNLE_RUN, SIGNLE_STOP, TRACK_RUN, TRACK_STOP};
+extern enum MODE myMODE;
 #endif

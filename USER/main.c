@@ -34,18 +34,16 @@ PF8 作为激光笔控制输出
 
 __IO uint32_t nowTime;
 
+
 // 设置 DS3120 角度
 // 1000~2500ns -> 0~270 deg
-void PWM_SetDegree(double deg)
-{
-    LASER(GPIO_PIN_SET);   //关闭激光笔
+void PWM_SetDegree(double deg) {
     deg += 90;
     deg = deg * 90 / 106; // 角度初步修正
     deg = (deg - 0.2193)/1.0221 ; // 角度根据激光修正
     u32 compare = 5000 - (u32)(deg/180.0 * 1500 + 1000);
 	TIM_SetTIM14Compare1(compare);
     // mainLogPrintf("\nset deg: %f deg, %u cmp",deg,compare);
-    LASER(GPIO_PIN_RESET);   
 }
 
 // 主计算函数
@@ -55,6 +53,7 @@ void PWM_SetDegree(double deg)
 void main_solve(struct exti_data *ed) {
     //mainLogPrintf("\nmain_solve:");
     if (ed->data_writed == 0x0001U+0x0002U+0x0004U) {
+        LASER(GPIO_PIN_SET);   //关闭激光笔
         double t1 = ed->timestap[0]*NOW_TIME_TICK;
         double t2 = ed->timestap[1]*NOW_TIME_TICK;
         double t3 = ed->timestap[2]*NOW_TIME_TICK;
@@ -76,7 +75,16 @@ void main_solve(struct exti_data *ed) {
         // 拟合校准
         theta = theta*1.0362-1.4403;
         gamma = 0.3869*gamma+1.8659;
-        //剔除坏值
+
+        // gamma 限值
+        if (gamma * cos(theta*PI/180.0) > 3.05) {
+            gamma = 3.05/cos(theta*PI/180.0);
+        }
+        if (gamma * cos(theta*PI/180.0) < 2.55) {
+            gamma = 2.55/cos(theta*PI/180.0);
+        }
+
+        // 剔除坏值
         if ( -60 < theta && theta < 60 
             && fabs(tau1)+fabs(tau2) < 0.005 // <1.5e-4 * 2
             /* && 0 < gamma && gamma < 5*/) {
@@ -86,13 +94,14 @@ void main_solve(struct exti_data *ed) {
         
         //消抖
         while (1) {
-            GUI_Delay(20);
+            GUI_Delay(100);  // 目前唯一手动延迟
             if (ed->data_writed == 0x0U) {
                 break;
             } else {
                 ed->data_writed = 0x0U;
             }
         }
+        LASER(GPIO_PIN_RESET);   //打开激光笔
         
     } else {
         //mainLogPrintf(".%x.",ed->data_writed);
@@ -162,11 +171,10 @@ int main(void)
     while(1)
 	{
 		//GUI_Delay(500);
-
-        main_solve(&ExtiData); 
-        
+        if (myMODE == SIGNLE_RUN || myMODE == TRACK_RUN) {
+            main_solve(&ExtiData); 
+        }
         //voiceSpeed_solve(&ExtiData); 
-        //show_nowTime(SysTick->VAL);
         GUI_Exec();
         LED0 = !LED0;
 	} 
