@@ -52,7 +52,7 @@
 *.ELF
 *.HEX
 *.H86
-*.LIB
+# *.LIB
 *.OBJ
 *.O
 *.SBR
