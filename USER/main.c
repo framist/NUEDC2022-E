@@ -1,6 +1,6 @@
 /************************************************
 fork from F4_HAL_emwin https://github.com/framist/STemWinForHAL
-实现平台 ALIENTEK STM32F407ZGT6最小系统版
+实现平台 ALIENTEK STM32F407ZGT6 最小系统版
 AUEDC 2022
 
 版级接口：
@@ -8,7 +8,7 @@ AUEDC 2022
 printf 已重载为串口输出
 
 TIM14 PA7 用作PWM输出
-PC0~PC5 用作触发输入
+PC0~PC2 用作触发输入
 PF8 作为激光笔控制输出
 
 耦合一时爽，重构火葬场！
@@ -42,7 +42,7 @@ void PWM_SetDegree(double deg) {
     deg = deg * 90 / 106; // 角度初步修正
     deg = (deg - 0.2193)/1.0221 ; // 角度根据激光修正
     u32 compare = 5000 - (u32)(deg/180.0 * 1500 + 1000);
-	TIM_SetTIM14Compare1(compare);
+    TIM_SetTIM14Compare1(compare);
     // mainLogPrintf("\nset deg: %f deg, %u cmp",deg,compare);
 }
 
@@ -69,6 +69,7 @@ void main_solve(struct exti_data *ed) {
         theta = PI/2 - acos( (pow(gamma,2) + pow(d,2) - pow(gamma+tau2*v,2))
                 /(2*(gamma)*d) );
         theta = theta * 180.0 / PI;
+        
         mainLogPrintf("\n[+]solved t: %.8f, %.8f, %.8f s\n    tau: %.8f, %.8f",t1,t2,t3,tau1,tau2);
         mainLogPrintf("\n   theta: %f deg; gamma: %f m",theta,gamma);
         
@@ -130,29 +131,29 @@ int main(void)
     HAL_Init();                   	//初始化HAL库  
     
     Stm32_Clock_Init(336,8,2,7);  	//设置时钟,168Mhz
-	delay_init(168);                //初始化延时函数
-	uart_init(9600);                //初始化USART
+    delay_init(168);                //初始化延时函数
+    uart_init(9600);                //初始化USART
     
     TIM3_Init(999,83); 	            //1KHZ 定时器3设置为1ms
     TIM4_Init(999,839);             //触摸屏扫描速度,100HZ.
     TIM5_Init(4,83);                //nowTime 200kHZ 0.000 005s.  NOW_TIME_TICK
     TIM14_PWM_Init(5000-1,84-1);    //84M/84=1M的计数频率，自动重装载为5000，那么PWM频率为1M/5000=200HZ
 
-	LED_Init();						//初始化LED	
+    LED_Init();						//初始化LED	
     KEY_Init();                     //初始化按键
-	EXTI_Init();                    //外部中断初始化
-	TFTLCD_Init();           	    //初始化LCD FSMC接口
+    EXTI_Init();                    //外部中断初始化
+    TFTLCD_Init();           	    //初始化LCD FSMC接口
     TP_Init();				        //触摸屏初始化
     
-	
-	my_mem_init(SRAMIN);			//初始化内部内存池
-	//my_mem_init(SRAMEX);			//不使用外部内存池
-	my_mem_init(SRAMCCM);			//初始化CCM内存池
+    
+    my_mem_init(SRAMIN);			//初始化内部内存池
+    //my_mem_init(SRAMEX);			//不使用外部内存池
+    my_mem_init(SRAMCCM);			//初始化CCM内存池
     
     __HAL_RCC_CRC_CLK_ENABLE();//使能CRC时钟，否则STemWin不能使用
 
-	WM_SetCreateFlags(WM_CF_MEMDEV);//为重绘操作自动使用存储设备
-	GUI_Init();
+    WM_SetCreateFlags(WM_CF_MEMDEV);//为重绘操作自动使用存储设备
+    GUI_Init();
     GUI_CURSOR_Show();
 
     //创建主窗口
@@ -169,14 +170,14 @@ int main(void)
     mainLogPrint("\ninit OK!");
     show_reflesh(0,0);
     while(1)
-	{
-		//GUI_Delay(500);
+    {
+        //GUI_Delay(500);
         if (myMODE == SIGNLE_RUN || myMODE == TRACK_RUN) {
             main_solve(&ExtiData); 
         }
         //voiceSpeed_solve(&ExtiData); 
         GUI_Exec();
         LED0 = !LED0;
-	} 
+    } 
 }
 
