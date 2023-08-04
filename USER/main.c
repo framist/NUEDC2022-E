@@ -1,7 +1,9 @@
 /************************************************
 fork from F4_HAL_emwin https://github.com/framist/STemWinForHAL
 实现平台 ALIENTEK STM32F407ZGT6 最小系统版
+
 AUEDC 2022
+ps. 实际上是 NUEDC ，之前的与本代码 UI 部分中的 AUEDC 都是笔误 -- 2023-8-4
 
 版级接口：
 
@@ -69,7 +71,7 @@ void main_solve(struct exti_data *ed) {
         theta = PI/2 - acos( (pow(gamma,2) + pow(d,2) - pow(gamma+tau2*v,2))
                 /(2*(gamma)*d) );
         theta = theta * 180.0 / PI;
-        
+
         mainLogPrintf("\n[+]solved t: %.8f, %.8f, %.8f s\n    tau: %.8f, %.8f",t1,t2,t3,tau1,tau2);
         mainLogPrintf("\n   theta: %f deg; gamma: %f m",theta,gamma);
         
