@@ -41,7 +41,7 @@ fork from:
 >
 > 6．设计报告（20分）
 >
-> | **项** **目**        | **主要内容**                                         | **满分** |
+> | **项目**        | **主要内容**                                         | **满分** |
 > | -------------------- | ---------------------------------------------------- | -------- |
 > | 方案论证             | 比较与选择，方案描述。                               | 3        |
 > | 理论分析与计算       | 系统相关参数设计                                     | 5        |
@@ -247,34 +247,28 @@ fork from:
 
 ​    由于每路信号在装置中传递时都会产生固定的时延差，且互不相等，会产生一个固有的系统误差。我们采用如下方法对该误差进行校正：
 
-​    将声源分别置于移动区域的左侧和右侧，其与区域中心的距离相等，如图3.4.1所示。如果没有该系统误差，则其时延差应该满足t1 = t4，t2 = t3。而实际测试时发现测得的时延差并不满足如上关系。通过测量数据与上述等式可以求解并校正该系统误差。![img](http://framist-bucket-openread.oss-cn-shanghai.aliyuncs.com/img/clip_image002.gif)
+​    将声源分别置于移动区域的左侧和右侧，其与区域中心的距离相等，如图3.4.1所示。如果没有该系统误差，则其时延差应该满足t1 = t4，t2 = t3。而实际测试时发现测得的时延差并不满足如上关系。通过测量数据与上述等式可以求解并校正该系统误差。
+
+![img](http://framist-bucket-openread.oss-cn-shanghai.aliyuncs.com/img/clip_image002.gif)
 
 ##### 3.4.2 数据拟合校正误差
 
 ![图形用户界面, 文本, 应用程序, 电子邮件  描述已自动生成](http://framist-bucket-openread.oss-cn-shanghai.aliyuncs.com/img/clip_image004.jpg)
- 为了校正装置带来的系统误差，我们使用最小二乘法将测量数据与真实数据进行线性拟合。我们通过所设计的装置对已知位置的声源进行定位，获得测量数据，将其与真实数据比对拟合缩小误差。最小二乘法的目的是使测量数据与真实数据的残差和最小，由此构建目标函数：
+
+为了校正装置带来的系统误差，我们使用最小二乘法将测量数据与真实数据进行线性拟合。我们通过所设计的装置对已知位置的声源进行定位，获得测量数据，将其与真实数据比对拟合缩小误差。最小二乘法的目的是使测量数据与真实数据的残差和最小，由此构建目标函数：
 
 ![图形用户界面, 文本  描述已自动生成](http://framist-bucket-openread.oss-cn-shanghai.aliyuncs.com/img/clip_image007.jpg)
  为了求解目标函数的最小值，需将目标函数对其两个参数求导：
 
  
 
-|      |                                                              |
-| ---- | ------------------------------------------------------------ |
-|      | ![图形用户界面, 文本, 应用程序  描述已自动生成](http://framist-bucket-openread.oss-cn-shanghai.aliyuncs.com/img/clip_image009.jpg) |
+![图形用户界面, 文本, 应用程序  描述已自动生成](http://framist-bucket-openread.oss-cn-shanghai.aliyuncs.com/img/clip_image009.jpg) 
 
-求解得到：
+求解得到： 
 
-
-
- 
-
-|      |                                                              |
-| ---- | ------------------------------------------------------------ |
-|      | ![图形用户界面, 文本, 应用程序  描述已自动生成](http://framist-bucket-openread.oss-cn-shanghai.aliyuncs.com/img/clip_image010.jpg) |
+![图形用户界面, 文本, 应用程序  描述已自动生成](http://framist-bucket-openread.oss-cn-shanghai.aliyuncs.com/img/clip_image010.jpg) 
 
 拟合得到线性函数![img](http://framist-bucket-openread.oss-cn-shanghai.aliyuncs.com/img/clip_image012.gif)。
-
 
 
 拟合结果如下图所示：
@@ -320,3 +314,5 @@ fork from:
 [7]居太亮. 基于麦克风阵列的声源定位算法研究[D].电子科技大学,2006.
 
 [8]李文,夏秀渝,何培宇,李源.基于麦克风阵列的近场声源定位[J].四川大学学报(自然科学版),2008(02):307-310.
+
+[NUEDC 2022 E | Framist's Little House](https://framist.github.io/2023/08/04/【电子设计与嵌入式】/NUEDC2022/)
