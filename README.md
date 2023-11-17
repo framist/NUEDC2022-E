@@ -10,7 +10,7 @@ fork from:
 
 省级大学生电子设计竞赛 一等奖作品
 
-
+合作者 @月下v秋风 & 何
 
 *2023年8月4日：因今年的赛题 NUEDC 2023 F - 基于声传播的智能定位系统（F 题） 与本题相近，故重新整理此仓库之*
 
@@ -315,4 +315,6 @@ fork from:
 
 [8]李文,夏秀渝,何培宇,李源.基于麦克风阵列的近场声源定位[J].四川大学学报(自然科学版),2008(02):307-310.
 
-[NUEDC 2022 E | Framist's Little House](https://framist.github.io/2023/08/04/【电子设计与嵌入式】/NUEDC2022/)
+---
+
+[blog](https://framist.github.io/post/nuedc-2022-e.html)
